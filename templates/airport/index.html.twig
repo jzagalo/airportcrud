@@ -21,7 +21,7 @@
       <td> {{ airport.name }}</td>
       <td>{{ airport.country }}</td>
       <td>{{ airport.location }}</td>
-      <td>{{ airport.airlines }}</td>
+      <td>{{ airport.airlines|split('') }}</td>
       <td>      
       	<a href="/airports/edit/{{airport.id}}" class="btn btn-dark">
       		Edit

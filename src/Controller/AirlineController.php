@@ -7,51 +7,54 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController; 
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\Airports;
 use App\Entity\Airline;
 
-class AirportController extends Controller
+class AirlineController extends AbstractController 
+
 {
     
     /**
-	 * @Route("/airports" , name="show_airports")
+	 * @Route("/airlines" , name="show_airlines")
 	 * @Method("GET")
 	 */
-    public function showAirports()
+    public function showAirlines()
     {
-       $airports = $this->getDoctrine()->getRepository(Airports::class)->findAll();
-
-        return $this->render('airport/index.html.twig', array(
-        	'airports' => $airports
+       $airlines = $this->getDoctrine()->getRepository(Airline::class)->findAll();   
+        return $this->render('airline/index.html.twig', array(
+        	'airlines' => $airlines
         ));
 
     }
 
       /**
-	 * @Route("/airports/new" , name="add_airport")
+	 * @Route("/airlines/new" , name="add_airline")
 	 * @Method("GET")
 	 */
-    public function addAirport(Request $request)
+    public function addAirline(Request $request)
     {
       
-        $airline = new Airline();  
-		$airport = new Airports();
+        $airline = new Airline();		
 		
-		$form = $this->createFormBuilder($airport)
+		$form = $this->createFormBuilder($airline)
 			->add('name', TextType::class, 
 				array('attr' => array('class' => 'form-control')))
 			->add('country', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
-			->add('location', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
-			->add('airlines', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
+				array('attr' => array('class' => 'form-control')))			
+			->add('airports', EntityType::class, ['choices' => $airline->getAirports(),
+			'placeholder' => 'Choose Airport',
+			'class' => Airports::class,
+			'attr' => array('class' => 'form-control') ])
+				
 			->add('save', SubmitType::class, 
 				array('attr' => array(
 					'label' => 'Create',
@@ -61,54 +64,56 @@ class AirportController extends Controller
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			$airport = $form->getData();
+			$airline = $form->getData();
 			$entityManager = $this->getDoctrine()->getManager();
-			$entityManager->persist($airport);
+			$entityManager->persist($airline);
 
 	        // actually executes the queries (i.e. the INSERT query)
 	        $entityManager->flush();
-	        return $this->redirectToRoute('show_airports');
+	        return $this->redirectToRoute('show_airlines');
 		}	
 
 
-        return $this->render('airport/new.html.twig', array(
+        return $this->render('airline/new.html.twig', array(
         	'form' => $form->createView()
         ));
     }
 
      /**
-	 * @Route("/airports/delete/{id}" , name="delete_airport")
+	 * @Route("/airline/delete/{id}" , name="delete_airline")
 	 * @Method("POST")
 	 */
 
-	 public function deleteAirport(Request $request, $id) {
+	 public function deleteAirline(Request $request, $id) {
 		
-	 	$airport = $this->getDoctrine()->getRepository(Airports::class)->find((int)$id);
+	 	$airline = $this->getDoctrine()->getRepository(Airline::class)->find((int)$id);
 	 	$entityManager = $this->getDoctrine()->getManager();
-		$entityManager->remove($airport);
+		$entityManager->remove($airline);
 		$entityManager->flush();
 		
 		return $this->json($id);
 	 }
 
 	 /**
-	 * @Route("/airports/edit/{id}" , name="edit_airport")
+	 * @Route("/airlines/edit/{id}" , name="edit_airline")
 	 * @Method({"GET", "POST"})
 	 */
 
 	 public function editAirport(Request $request, $id) {
-	 	//$airport = new Airports();
-	 	$airport = $this->getDoctrine()->getRepository(Airports::class)->find((int)$id);
+	 	$airportChoice = new Airline();
+	 	$airline = $this->getDoctrine()->getRepository(Airline::class)->find((int)$id);
 
-	 	$form = $this->createFormBuilder($airport)
+
+	 	$form = $this->createFormBuilder($airline)
 			->add('name', TextType::class, 
 				array('attr' => array('class' => 'form-control')))
 			->add('country', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
-			->add('location', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
-			->add('airlines', TextType::class, 
-				array('attr' => array('class' => 'form-control')))
+				array('attr' => array('class' => 'form-control')))			
+			->add('airports', EntityType::class, ['choices' => $airportChoice->getAirports(),
+			'placeholder' => 'Choose Airport',
+			'class' => Airports::class,
+			'attr' => array('class' => 'form-control') ])
+				
 			->add('save', SubmitType::class, 
 				array('attr' => array(
 					'label' => 'Create',
@@ -119,13 +124,13 @@ class AirportController extends Controller
 
 		if($form->isSubmitted() && $form->isValid()){
 			$entityManager = $this->getDoctrine()->getManager();
-			$entityManager->persist($airport);
+			$entityManager->persist($airline);
 			$entityManager->flush();
 
-			return $this->redirectToRoute('show_airports');
+			return $this->redirectToRoute('show_airlines');
 		}
 
-		 return $this->render('airport/new.html.twig', array(
+		 return $this->render('airline/new.html.twig', array(
         	'form' => $form->createView()
         ));
 

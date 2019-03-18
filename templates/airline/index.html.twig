@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block titke %} All Airlines {% endblock %}
+
+{% block body %}
+<div class="container mt-3">
+{% if airlines|length > 0 %}	
+<table  id="airlines" class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Country</th>  
+      <th scope="col">AirPorts</th>   
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody> 
+{% for airline in airlines %}  
+    <tr>
+      <td> {{ airline.name }}</td>
+      <td>{{ airline.country }}</td>
+      <td>{{airline.airports.name}}</td>           
+      <td>      
+      	<a href="/airlines/edit/{{airline.id}}" class="btn btn-dark">
+      		Edit
+      	</a>
+      	<a href="#" class="btn btn-danger delete-airline" data-id="{{airline.id}}" data-name="{{airline.name}}">
+      		Delete
+      	</a>
+      </td>
+    </tr>
+{% endfor %}
+    
+  </tbody>
+</table>
+{% else %}
+	<p>No Airlines to Display</p>
+{% endif %}
+	</div>
+{% endblock %}	
+
+{% block javascripts %}
+	{{ parent() }}
+	<script type="text/javascript">
+	$(document).ready(function(){
+		var airlines = document.getElementById('airlines');
+
+if (airlines) {
+	airlines.addEventListener('click', function(e) {
+	
+		if(e.target.className === 'btn btn-danger delete-airline'){
+			var airlineToDelete = e.target.getAttribute('data-name');
+			if(confirm('Are you sure you want to delete ' + airlineToDelete + ' ?')) {
+				
+				var ID = e.target.getAttribute('data-id').toString();				
+				var url = '{{ path('delete_airline', { 'id': 'dummyId' })}}';			
+				url = url.replace("dummyId", ID);				
+
+				$.ajax({ 
+					url: url,
+					method : 'POST'						
+				}).success(function(res){
+					console.log(res)
+				 	window.location.reload();
+				}).fail(function(err){
+					console.log(err);
+				});
+			}
+		}
+	});
+}
+
+	});
+
+
+	</script>
+{% endblock %}
