@@ -15,19 +15,20 @@
           </button>
 
           <div class="collapse navbar-collapse" id="navbarColor01">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
+            <ul class="navbar-nav mr-auto">             
               <li class="nav-item">
                 <a class="nav-link" href="{{ path('show_airports')}}">Show Airports</a>
               </li>
               <li class="nav-item">
-               {# <a class="nav-link" href="{{ path('add_airport')}}">Add Airports</a> #}
+               <a class="nav-link" href="{{ path('add_airport')}}">Add Airports</a> 
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
+                <a class="nav-link" href="{{ path('show_airlines')}}">Show Airlines</a>
               </li>
+              <li class="nav-item">
+               <a class="nav-link" href="{{ path('add_airline')}}">Add Airline</a> 
+              </li>
+             
             </ul>
             <form class="form-inline my-2 my-lg-0">
               <input class="form-control mr-sm-2" type="text" placeholder="Search">

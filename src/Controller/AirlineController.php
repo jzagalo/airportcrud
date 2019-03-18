@@ -18,6 +18,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Entity\Airports;
 use App\Entity\Airline;
+use App\Entity\Country;
 
 class AirlineController extends AbstractController 
 
@@ -29,6 +30,20 @@ class AirlineController extends AbstractController
 	 */
     public function showAirlines()
     {
+
+       /*$csv = explode("\n", file_get_contents('./../fixtures/airlines.csv'));
+       $cnt = explode("\n", file_get_contents('./../fixtures/countries.csv'));
+
+       $csv = array_splice($csv, 0, sizeof($csv)-2);
+       $airlinesData = array();
+       foreach ($csv as $key => $value) {
+       		$data = explode(',', $value);
+       		$airlinesData[] = $data[1];
+       		$airlinesData[] = $data[6];
+       }
+
+       var_dump($cnt);
+       die();	*/
        $airlines = $this->getDoctrine()->getRepository(Airline::class)->findAll();   
         return $this->render('airline/index.html.twig', array(
         	'airlines' => $airlines
@@ -43,15 +58,18 @@ class AirlineController extends AbstractController
     public function addAirline(Request $request)
     {
       
-        $airline = new Airline();		
+        $airline = new Airline();	
+        $country = new Country();	
 		
 		$form = $this->createFormBuilder($airline)
 			->add('name', TextType::class, 
 				array('attr' => array('class' => 'form-control')))
-			->add('country', TextType::class, 
-				array('attr' => array('class' => 'form-control')))			
+			->add('country', EntityType::class, ['choices' => $country->getCountry(),
+			'placeholder' => 'Select Country',
+			'class' => Country::class,
+			'attr' => array('class' => 'form-control') ])			
 			->add('airports', EntityType::class, ['choices' => $airline->getAirports(),
-			'placeholder' => 'Choose Airport',
+			'placeholder' => 'Select Airport',
 			'class' => Airports::class,
 			'attr' => array('class' => 'form-control') ])
 				
